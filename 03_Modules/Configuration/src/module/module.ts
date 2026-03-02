@@ -51,12 +51,7 @@ import {
   ServerNetworkProfile,
   SetNetworkProfile,
 } from '@citrineos/data';
-import {
-  IdGenerator,
-  RabbitMqReceiver,
-  RabbitMqSender,
-  validateMessageContentType,
-} from '@citrineos/util';
+import { IdGenerator, validateMessageContentType } from '@citrineos/util';
 import type { ILogObj } from 'tslog';
 import { Logger } from 'tslog';
 import { v4 as uuidv4 } from 'uuid';
@@ -121,8 +116,8 @@ export class ConfigurationModule extends AbstractModule {
   constructor(
     config: BootstrapConfig & SystemConfig,
     cache: ICache,
-    sender?: IMessageSender,
-    handler?: IMessageHandler,
+    sender: IMessageSender,
+    handler: IMessageHandler,
     logger?: Logger<ILogObj>,
     ocppValidator?: OCPPValidator,
     bootRepository?: IBootRepository,
@@ -134,15 +129,7 @@ export class ConfigurationModule extends AbstractModule {
     idGenerator?: IdGenerator,
     tenantRepository?: ITenantRepository,
   ) {
-    super(
-      config,
-      cache,
-      handler || new RabbitMqReceiver(config, logger),
-      sender || new RabbitMqSender(config, logger),
-      EventGroup.Configuration,
-      logger,
-      ocppValidator,
-    );
+    super(config, cache, handler, sender, EventGroup.Configuration, logger, ocppValidator);
 
     this._requests = config.modules.configuration.requests;
     this._responses = config.modules.configuration.responses;
