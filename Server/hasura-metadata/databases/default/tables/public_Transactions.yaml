@@ -79,6 +79,7 @@ select_permissions:
         - stationId
         - stoppedReason
         - transactionId
+        - meterStart
         - evseId
         - id
         - remoteStartId
