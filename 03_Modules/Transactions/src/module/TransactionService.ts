@@ -123,7 +123,7 @@ export class TransactionService {
       return response;
     } else {
       if (
-        authorization.concurrentTransaction === true &&
+        authorization.concurrentTransaction !== true &&
         transactionEvent.eventType === OCPP2_0_1.TransactionEventEnumType.Started
       ) {
         const hasConcurrent = await this._hasConcurrentTransactions(tenantId, authorization.id);
@@ -237,10 +237,12 @@ export class TransactionService {
       }
 
       // Check concurrent transactions
-      const hasConcurrent = await this._hasConcurrentTransactions(tenantId, authorization.id);
-      if (hasConcurrent) {
-        response.idTagInfo.status = OCPP1_6.StartTransactionResponseStatus.ConcurrentTx;
-        return response;
+      if (authorization.concurrentTransaction !== true) {
+        const hasConcurrent = await this._hasConcurrentTransactions(tenantId, authorization.id);
+        if (hasConcurrent) {
+          response.idTagInfo.status = OCPP1_6.StartTransactionResponseStatus.ConcurrentTx;
+          return response;
+        }
       }
 
       // Check authorizers
