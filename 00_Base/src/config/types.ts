@@ -189,18 +189,6 @@ export const systemConfigInputSchema = z.object({
       }),
     messageBroker: z
       .object({
-        kafka: z
-          .object({
-            topicPrefix: z.string().optional(),
-            topicName: z.string().optional(),
-            brokers: z.array(z.string()),
-            sasl: z.object({
-              mechanism: z.string(),
-              username: z.string(),
-              password: z.string(),
-            }),
-          })
-          .optional(),
         amqp: z
           .object({
             url: z.string(),
@@ -208,7 +196,7 @@ export const systemConfigInputSchema = z.object({
           })
           .optional(),
       })
-      .refine((obj) => obj.kafka || obj.amqp, {
+      .refine((obj) => obj.amqp, {
         message: 'A message broker implementation must be set',
       }),
     authProvider: z
@@ -491,18 +479,6 @@ export const systemConfigSchema = z
         }),
       messageBroker: z
         .object({
-          kafka: z
-            .object({
-              topicPrefix: z.string().optional(),
-              topicName: z.string().optional(),
-              brokers: z.array(z.string()),
-              sasl: z.object({
-                mechanism: z.string(),
-                username: z.string(),
-                password: z.string(),
-              }),
-            })
-            .optional(),
           amqp: z
             .object({
               url: z.string(),
@@ -510,7 +486,7 @@ export const systemConfigSchema = z
             })
             .optional(),
         })
-        .refine((obj) => obj.kafka || obj.amqp, {
+        .refine((obj) => obj.amqp, {
           message: 'A message broker implementation must be set',
         }),
       authProvider: z

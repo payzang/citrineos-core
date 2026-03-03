@@ -141,7 +141,7 @@ export class CitrineOSServer {
     cache?: ICache,
     _fileStorage?: IFileStorage,
   ) {
-    // TODO: Create and export config schemas for each util module, such as amqp, redis, kafka, etc, to avoid passing them possibly invalid configuration
+    // TODO: Create and export config schemas for each util module, such as amqp, redis, etc, to avoid passing them possibly invalid configuration
     if (!systemConfig.util.messageBroker.amqp) {
       throw new Error('This server implementation requires amqp configuration for rabbitMQ.');
     }

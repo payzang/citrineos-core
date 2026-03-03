@@ -79,7 +79,6 @@ function buildMockHandler(): Mocked<IMessageHandler> {
     unsubscribe: vi.fn().mockResolvedValue(true),
     handle: vi.fn(),
     shutdown: vi.fn().mockResolvedValue(undefined),
-    initConnection: vi.fn().mockResolvedValue(undefined),
     module: undefined,
   } as unknown as Mocked<IMessageHandler>;
 }
@@ -143,10 +142,6 @@ describe('MessageRouterImpl', () => {
   // ─── Constructor ───────────────────────────────────────────────────────────
 
   describe('constructor', () => {
-    it('should call handler.initConnection on construction', () => {
-      expect(handler.initConnection).toHaveBeenCalled();
-    });
-
     it('should use provided locationRepository', () => {
       // Verify it doesn't try to create a default one by checking our mock is used
       expect(router['_locationRepository']).toBe(locationRepository);
