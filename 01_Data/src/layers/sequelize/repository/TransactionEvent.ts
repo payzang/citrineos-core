@@ -171,7 +171,7 @@ export class SequelizeTransactionEventRepository
             include: [Tariff],
           });
           connectorId = connector.id;
-          tariffId = connector.tariffs?.[0]?.id;
+          tariffId = connector.tariff?.id;
         }
         let authorizationId = existingTransaction.authorizationId;
         if (!authorizationId && value.idToken) {
@@ -243,7 +243,7 @@ export class SequelizeTransactionEventRepository
               include: [Tariff],
             });
             newTransaction.set('connectorId', connector.id);
-            newTransaction.set('tariffId', connector.tariffs?.[0]?.id);
+            newTransaction.set('tariffId', connector.tariff?.id);
           }
         }
 
@@ -702,11 +702,11 @@ export class SequelizeTransactionEventRepository
         stationId,
         evseId: connector.evseId,
         connectorId: connector.id,
-        tariffId: connector.tariffs?.[0]?.id,
+        tariffId: connector.tariff?.id,
         isActive: true,
         transactionId: transactionId.toString(),
         authorizationId: authorization ? authorization.id : null,
-        meterStart: request.meterStart,
+        meterStart: request.meterStart / 1000, // Convert Wh to kWh
         startTime: request.timestamp,
       });
 
