@@ -706,7 +706,7 @@ export class SequelizeTransactionEventRepository
         isActive: true,
         transactionId: transactionId.toString(),
         authorizationId: authorization ? authorization.id : null,
-        meterStart: request.meterStart,
+        meterStart: request.meterStart / 1000, // Convert Wh to kWh
         startTime: request.timestamp,
       });
 
