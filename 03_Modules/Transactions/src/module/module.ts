@@ -358,7 +358,7 @@ export class TransactionsModule extends AbstractModule {
         ) {
           response.totalCost = await this._costCalculator.calculateTotalCost(
             tenantId,
-            stationId,
+            transaction.connectorId,
             transaction.totalKwh,
           );
         }
@@ -390,7 +390,7 @@ export class TransactionsModule extends AbstractModule {
       ) {
         response.totalCost = await this._costCalculator.calculateTotalCost(
           tenantId,
-          stationId,
+          transaction.connectorId,
           transaction.totalKwh,
         );
       }

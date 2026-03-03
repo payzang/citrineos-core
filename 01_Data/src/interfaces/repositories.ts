@@ -409,7 +409,7 @@ export interface IMessageInfoRepository extends CrudRepository<MessageInfo> {
 }
 
 export interface ITariffRepository extends CrudRepository<Tariff> {
-  findByStationId(tenantId: number, stationId: string): Promise<Tariff | undefined>;
+  findByConnectorId(tenantId: number, connectorId: number): Promise<Tariff | undefined>;
   readAllByQuerystring(tenantId: number, query: TariffQueryString): Promise<Tariff[]>;
   deleteAllByQuerystring(tenantId: number, query: TariffQueryString): Promise<Tariff[]>;
   upsertTariff(tenantId: number, tariff: Tariff): Promise<Tariff>;
