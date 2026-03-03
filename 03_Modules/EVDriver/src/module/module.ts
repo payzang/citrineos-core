@@ -49,7 +49,6 @@ import {
   OCPP2_0_1_Mapper,
   sequelize,
   SequelizeChargingStationSequenceRepository,
-  Tariff,
   VariableAttribute,
 } from '@citrineos/data';
 import {
@@ -476,19 +475,7 @@ export class EVDriverModule extends AbstractModule {
         (tariffAvailable.length > 0 && Boolean(tariffAvailable[0].value)) ||
         (displayMessageAvailable.length > 0 && Boolean(displayMessageAvailable[0].value))
       ) {
-        // TODO: refactor the workaround below after tariff implementation is finalized.
-        const tariff: Tariff | undefined = await this._tariffRepository.findByStationId(
-          context.tenantId,
-          message.context.stationId,
-        );
-        if (tariff) {
-          if (!response.idTokenInfo.personalMessage) {
-            response.idTokenInfo.personalMessage = {
-              format: OCPP2_0_1.MessageFormatEnumType.ASCII,
-            } as OCPP2_0_1.MessageContentType;
-          }
-          response.idTokenInfo.personalMessage.content = `${tariff.pricePerKwh}/kWh`;
-        }
+        // TODO: The OCPP 2.0.1 Authorize request pricing message requires EV Driver specific pricing, which is not yet supported.
       }
     }
 
