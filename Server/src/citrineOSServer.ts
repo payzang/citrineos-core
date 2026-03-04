@@ -70,6 +70,8 @@ import {
   MemoryCache,
   NetworkProfileFilter,
   OIDCAuthProvider,
+  RabbitMQChannelManager,
+  RabbitMQConnectionManager,
   RabbitMqReceiver,
   RabbitMqSender,
   RealTimeAuthorizer,
@@ -77,8 +79,6 @@ import {
   UnknownStationFilter,
   WebsocketNetworkConnection,
 } from '@citrineos/util';
-import { RabbitMQChannelManager } from '@citrineos/util/src/queue/rabbit-mq/ChannelManager.js';
-import { RabbitMQConnectionManager } from '@citrineos/util/src/queue/rabbit-mq/ConnectionManager.js';
 import cors from '@fastify/cors';
 import { type JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import type { FastifyInstance } from 'fastify';
