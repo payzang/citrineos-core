@@ -33,6 +33,7 @@ export const websocketServerInputSchema = z.object({
     .optional(),
   securityProfile: z.number().int().min(0).max(3).default(0).optional(),
   allowUnknownChargingStations: z.boolean().default(false).optional(),
+  ignoreAuthorizationHeaders: z.boolean().default(false).optional(), // When true, authorization headers will be ignored and authentication will be bypassed.
   tlsKeyFilePath: z.string().optional(), // Leaf certificate's private key pem which decrypts the message from client
   tlsCertificateChainFilePath: z.string().optional(), // Certificate chain pem consist of a leaf followed by sub CAs
   mtlsCertificateAuthorityKeyFilePath: z.string().optional(), // Sub CA's private key which signs the leaf (e.g.,
@@ -319,6 +320,7 @@ export const websocketServerSchema = z
     protocols: z.array(z.enum(['ocpp1.6', 'ocpp2.0.1'])),
     securityProfile: z.number().int().min(0).max(3),
     allowUnknownChargingStations: z.boolean(),
+    ignoreAuthorizationHeaders: z.boolean().default(false).optional(),
     tlsKeyFilePath: z.string().optional(),
     tlsCertificateChainFilePath: z.string().optional(),
     mtlsCertificateAuthorityKeyFilePath: z.string().optional(),

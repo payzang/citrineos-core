@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2025 Contributors to the CitrineOS Project
 //
 // SPDX-License-Identifier: Apache-2.0
-import type { ILogObj } from 'tslog';
-import { Logger } from 'tslog';
+import type { AuthenticationOptions } from '@citrineos/base';
+import { OCPP2_0_1 } from '@citrineos/base';
 import type { IDeviceModelRepository } from '@citrineos/data';
 import { CryptoUtils } from '@citrineos/data';
 import { IncomingMessage } from 'http';
+import type { ILogObj } from 'tslog';
+import { Logger } from 'tslog';
 import { extractBasicCredentials } from '../../util/RequestOperations.js';
 import { AuthenticatorFilter } from './AuthenticatorFilter.js';
-import type { AuthenticationOptions } from '@citrineos/base';
-import { OCPP2_0_1 } from '@citrineos/base';
 import { UpgradeAuthenticationError } from './errors/AuthenticationError.js';
 
 /**
@@ -25,7 +25,10 @@ export class BasicAuthenticationFilter extends AuthenticatorFilter {
   }
 
   protected shouldFilter(options: AuthenticationOptions): boolean {
-    return options.securityProfile === 1 || options.securityProfile === 2;
+    return (
+      (options.securityProfile === 1 || options.securityProfile === 2) &&
+      !options.ignoreAuthorizationHeaders
+    );
   }
 
   protected async filter(

@@ -234,6 +234,7 @@ export class WebsocketNetworkConnection implements INetworkConnection {
       const { identifier } = await this._authenticator.authenticate(req, resolvedTenantId, {
         securityProfile: websocketServerConfig.securityProfile,
         allowUnknownChargingStations: websocketServerConfig.allowUnknownChargingStations,
+        ignoreAuthorizationHeaders: websocketServerConfig.ignoreAuthorizationHeaders || false,
       });
 
       this._logger.debug('Successfully registered websocket client', identifier);
