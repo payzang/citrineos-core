@@ -85,7 +85,16 @@ export class WebsocketNetworkConnection implements INetworkConnection {
         const clientConnection = await this._cache.get(identifier, CacheNamespace.Connections);
         if (clientConnection) {
           const websocketConnection = this._identifierConnections.get(identifier);
-          if (websocketConnection && websocketConnection.readyState === WebSocket.OPEN) {
+          if (!websocketConnection) {
+            const errorMsg = 'Websocket connection not found for ' + identifier;
+            this._logger.fatal(errorMsg);
+            reject(new Error(errorMsg)); // Reject with a new error
+          } else if (websocketConnection.readyState !== WebSocket.OPEN) {
+            const errorMsg = 'Websocket connection is not ready - ' + identifier;
+            this._logger.fatal(errorMsg);
+            websocketConnection?.close(1011, errorMsg);
+            reject(new Error(errorMsg)); // Reject with a new error
+          } else {
             websocketConnection.send(message, (error) => {
               if (error) {
                 reject(error); // Reject the promise with the error
@@ -93,11 +102,6 @@ export class WebsocketNetworkConnection implements INetworkConnection {
                 resolve(); // Resolve the promise with true indicating success
               }
             });
-          } else {
-            const errorMsg = 'Websocket connection is not ready - ' + identifier;
-            this._logger.fatal(errorMsg);
-            websocketConnection?.close(1011, errorMsg);
-            reject(new Error(errorMsg)); // Reject with a new error
           }
         } else {
           const errorMsg = 'Cannot identify client connection for ' + identifier;

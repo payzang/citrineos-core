@@ -22,6 +22,8 @@ export const bootstrapConfigSchema = z.object({
       .object({
         max: z.number().int().positive().optional(),
         min: z.number().int().nonnegative().optional(),
+        acquire: z.number().int().positive().optional(),
+        idle: z.number().int().positive().optional(),
       })
       .optional(),
     sync: z.boolean().default(false),
@@ -132,6 +134,11 @@ export function loadBootstrapConfig(): BootstrapConfig {
   const pool = {
     max: getEnvVarValue('database_pool_max') && parseInt(getEnvVarValue('database_pool_max')!, 10),
     min: getEnvVarValue('database_pool_min') && parseInt(getEnvVarValue('database_pool_min')!, 10),
+    acquire:
+      getEnvVarValue('database_pool_acquire') &&
+      parseInt(getEnvVarValue('database_pool_acquire')!, 10),
+    idle:
+      getEnvVarValue('database_pool_idle') && parseInt(getEnvVarValue('database_pool_idle')!, 10),
   };
   if (Object.keys(pool).length > 0) {
     config.database.pool = pool;

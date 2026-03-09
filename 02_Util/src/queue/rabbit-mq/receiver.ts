@@ -23,7 +23,7 @@ export class RabbitMqReceiver extends AbstractMessageHandler {
    * Fields
    */
   protected _channelManager: RabbitMQChannelManager;
-  protected _consumerTags = new Map<string, string>(); // Map of identifier to consumerTag for unsubscribing
+  protected _consumerTags = new Map<string, string[]>(); // Map of identifier to consumerTags for unsubscribing
 
   constructor(
     private exchange: string,
@@ -112,7 +112,8 @@ export class RabbitMqReceiver extends AbstractMessageHandler {
 
     // Start consuming messages
     const consume = await channel.consume(queueName, (msg) => this._onMessage(msg, channel));
-    this._consumerTags.set(identifier, consume.consumerTag);
+    const existing = this._consumerTags.get(identifier) ?? [];
+    this._consumerTags.set(identifier, [...existing, consume.consumerTag]);
 
     return true;
   }
@@ -123,10 +124,12 @@ export class RabbitMqReceiver extends AbstractMessageHandler {
       this._logger.error('RabbitMQ is down: cannot unsubscribe.');
       return false;
     }
-    const consumerTag = this._consumerTags.get(identifier);
-    if (consumerTag) {
-      await channel.cancel(consumerTag);
-      this._logger.debug(`Unsubscribed from ${identifier} with consumer tag ${consumerTag}.`);
+    const consumerTags = this._consumerTags.get(identifier);
+    if (consumerTags && consumerTags.length > 0) {
+      for (const consumerTag of consumerTags) {
+        await channel.cancel(consumerTag);
+        this._logger.debug(`Unsubscribed from ${identifier} with consumer tag ${consumerTag}.`);
+      }
       this._consumerTags.delete(identifier);
       return true;
     } else {
@@ -136,17 +139,19 @@ export class RabbitMqReceiver extends AbstractMessageHandler {
   }
 
   async shutdown(): Promise<void> {
-    for (const consumerTag of this._consumerTags.values()) {
+    for (const consumerTags of this._consumerTags.values()) {
       const channel = await this._channelManager.getChannel(RabbitMqReceiver.CHANNEL_ID);
       if (channel) {
-        try {
-          await channel.cancel(consumerTag);
-          this._logger.debug(`Cancelled consumer with tag ${consumerTag} during shutdown.`);
-        } catch (error) {
-          this._logger.error(
-            `Error cancelling consumer with tag ${consumerTag} during shutdown.`,
-            error,
-          );
+        for (const consumerTag of consumerTags) {
+          try {
+            await channel.cancel(consumerTag);
+            this._logger.debug(`Cancelled consumer with tag ${consumerTag} during shutdown.`);
+          } catch (error) {
+            this._logger.error(
+              `Error cancelling consumer with tag ${consumerTag} during shutdown.`,
+              error,
+            );
+          }
         }
       }
     }
