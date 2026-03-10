@@ -49,12 +49,7 @@ import {
   Transaction,
   VariableAttribute,
 } from '@citrineos/data';
-import {
-  RabbitMqReceiver,
-  RabbitMqSender,
-  RealTimeAuthorizer,
-  SignedMeterValuesUtil,
-} from '@citrineos/util';
+import { RealTimeAuthorizer, SignedMeterValuesUtil } from '@citrineos/util';
 import type { ILogObj } from 'tslog';
 import { Logger } from 'tslog';
 import { CostCalculator } from './CostCalculator.js';
@@ -162,8 +157,8 @@ export class TransactionsModule extends AbstractModule {
     config: BootstrapConfig & SystemConfig,
     cache: ICache,
     fileStorage: IFileStorage,
-    sender?: IMessageSender,
-    handler?: IMessageHandler,
+    sender: IMessageSender,
+    handler: IMessageHandler,
     logger?: Logger<ILogObj>,
     ocppValidator?: OCPPValidator,
     transactionEventRepository?: ITransactionEventRepository,
@@ -177,15 +172,7 @@ export class TransactionsModule extends AbstractModule {
     realTimeAuthorizer?: IAuthorizer,
     authorizers?: IAuthorizer[],
   ) {
-    super(
-      config,
-      cache,
-      handler || new RabbitMqReceiver(config, logger),
-      sender || new RabbitMqSender(config, logger),
-      EventGroup.Transactions,
-      logger,
-      ocppValidator,
-    );
+    super(config, cache, handler, sender, EventGroup.Transactions, logger, ocppValidator);
 
     this._requests = config.modules.transactions.requests;
     this._responses = config.modules.transactions.responses;

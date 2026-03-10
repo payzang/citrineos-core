@@ -11,15 +11,14 @@ import type {
 } from '@citrineos/base';
 import {
   AbstractModule,
-  EventGroup,
   BadRequestError,
   DEFAULT_TENANT_ID,
+  EventGroup,
   OCPPValidator,
 } from '@citrineos/base';
-import { RabbitMqReceiver, RabbitMqSender } from '@citrineos/util';
+import { type ITenantRepository, SequelizeTenantRepository, Tenant } from '@citrineos/data';
 import type { ILogObj } from 'tslog';
 import { Logger } from 'tslog';
-import { type ITenantRepository, SequelizeTenantRepository, Tenant } from '@citrineos/data';
 
 export class TenantModule extends AbstractModule {
   /**
@@ -56,21 +55,13 @@ export class TenantModule extends AbstractModule {
   constructor(
     config: BootstrapConfig & SystemConfig,
     cache: ICache,
-    sender?: IMessageSender,
-    handler?: IMessageHandler,
+    sender: IMessageSender,
+    handler: IMessageHandler,
     logger?: Logger<ILogObj>,
     ocppValidator?: OCPPValidator,
     tenantRepository?: ITenantRepository,
   ) {
-    super(
-      config,
-      cache,
-      handler || new RabbitMqReceiver(config, logger),
-      sender || new RabbitMqSender(config, logger),
-      EventGroup.Tenant,
-      logger,
-      ocppValidator,
-    );
+    super(config, cache, handler, sender, EventGroup.Tenant, logger, ocppValidator);
     this._requests = config.modules.tenant.requests;
     this._responses = config.modules.tenant.responses;
 

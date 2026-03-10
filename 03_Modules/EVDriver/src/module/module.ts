@@ -54,8 +54,6 @@ import {
 import {
   CertificateAuthorityService,
   IdGenerator,
-  RabbitMqReceiver,
-  RabbitMqSender,
   RealTimeAuthorizer,
   validateIdToken,
 } from '@citrineos/util';
@@ -147,8 +145,8 @@ export class EVDriverModule extends AbstractModule {
   constructor(
     config: BootstrapConfig & SystemConfig,
     cache: ICache,
-    sender?: IMessageSender,
-    handler?: IMessageHandler,
+    sender: IMessageSender,
+    handler: IMessageHandler,
     logger?: Logger<ILogObj>,
     ocppValidator?: OCPPValidator,
     authorizeRepository?: IAuthorizationRepository,
@@ -165,15 +163,7 @@ export class EVDriverModule extends AbstractModule {
     authorizers?: IAuthorizer[],
     idGenerator?: IdGenerator,
   ) {
-    super(
-      config,
-      cache,
-      handler || new RabbitMqReceiver(config, logger),
-      sender || new RabbitMqSender(config, logger),
-      EventGroup.EVDriver,
-      logger,
-      ocppValidator,
-    );
+    super(config, cache, handler, sender, EventGroup.EVDriver, logger, ocppValidator);
 
     this._requests = config.modules.evdriver.requests;
     this._responses = config.modules.evdriver.responses;

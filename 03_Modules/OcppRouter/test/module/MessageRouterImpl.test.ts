@@ -6,7 +6,6 @@ import type {
   Call,
   CallError,
   CallResult,
-  CircuitBreakerOptions,
   ICache,
   IMessageHandler,
   IMessageSender,
@@ -16,7 +15,6 @@ import type {
 } from '@citrineos/base';
 import {
   CacheNamespace,
-  CircuitBreaker,
   createIdentifier,
   ErrorCode,
   EventGroup,
@@ -81,7 +79,6 @@ function buildMockHandler(): Mocked<IMessageHandler> {
     unsubscribe: vi.fn().mockResolvedValue(true),
     handle: vi.fn(),
     shutdown: vi.fn().mockResolvedValue(undefined),
-    initConnection: vi.fn().mockResolvedValue(undefined),
     module: undefined,
   } as unknown as Mocked<IMessageHandler>;
 }
@@ -145,66 +142,9 @@ describe('MessageRouterImpl', () => {
   // ─── Constructor ───────────────────────────────────────────────────────────
 
   describe('constructor', () => {
-    it('should call handler.initConnection on construction', () => {
-      expect(handler.initConnection).toHaveBeenCalled();
-    });
-
     it('should use provided locationRepository', () => {
       // Verify it doesn't try to create a default one by checking our mock is used
       expect(router['_locationRepository']).toBe(locationRepository);
-    });
-
-    it('should use default maxReconnectDelay from config', () => {
-      expect(router['_maxReconnectDelay']).toBe(30);
-    });
-
-    it('should use custom maxReconnectDelay from config', () => {
-      const customConfig = buildConfig({ maxReconnectDelay: 60 });
-      const customRouter = new MessageRouterImpl(
-        customConfig,
-        cache,
-        sender,
-        handler,
-        dispatcher,
-        networkHook,
-        undefined,
-        undefined,
-        locationRepository,
-      );
-      expect(customRouter['_maxReconnectDelay']).toBe(60);
-    });
-
-    it('should fall back to DEFAULT_MAX_RECONNECT_DELAY when config is undefined', () => {
-      const customConfig = buildConfig({ maxReconnectDelay: undefined });
-      const customRouter = new MessageRouterImpl(
-        customConfig,
-        cache,
-        sender,
-        handler,
-        dispatcher,
-        networkHook,
-        undefined,
-        undefined,
-        locationRepository,
-      );
-      expect(customRouter['_maxReconnectDelay']).toBe(30);
-    });
-
-    it('should accept custom circuitBreakerOptions', () => {
-      const opts: CircuitBreakerOptions = { maxReconnectDelayMs: 5000 };
-      const customRouter = new MessageRouterImpl(
-        config,
-        cache,
-        sender,
-        handler,
-        dispatcher,
-        networkHook,
-        undefined,
-        undefined,
-        locationRepository,
-        opts,
-      );
-      expect(customRouter['_circuitBreaker']).toBeInstanceOf(CircuitBreaker);
     });
   });
 
@@ -947,126 +887,6 @@ describe('MessageRouterImpl', () => {
 
       expect(sender.shutdown).toHaveBeenCalled();
       expect(handler.shutdown).toHaveBeenCalled();
-    });
-  });
-
-  // ─── Circuit Breaker ──────────────────────────────────────────────────────
-
-  describe('circuit breaker', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    describe('handleCircuitBreakerStateChange', () => {
-      it('should reset failingReconnectDelay on CLOSED state', () => {
-        router['_failingReconnectDelay'] = 16;
-        router['handleCircuitBreakerStateChange']('CLOSED', 'test reason');
-        expect(router['_failingReconnectDelay']).toBe(1);
-      });
-
-      it('should reset failingReconnectDelay on OPEN state', () => {
-        router['_failingReconnectDelay'] = 16;
-        router['handleCircuitBreakerStateChange']('OPEN', 'test reason');
-        expect(router['_failingReconnectDelay']).toBe(1);
-      });
-
-      it('should attempt exponential reconnect on FAILING state', () => {
-        const spy = vi.spyOn(router as any, '_attemptExponentialReconnect');
-        router['handleCircuitBreakerStateChange']('FAILING', 'test reason');
-        expect(spy).toHaveBeenCalled();
-      });
-    });
-
-    describe('_attemptExponentialReconnect', () => {
-      it('should close circuit breaker when max delay is exceeded', () => {
-        const closeSpy = vi.spyOn(router['_circuitBreaker'], 'close');
-        router['_failingReconnectDelay'] = 31; // > DEFAULT_MAX_RECONNECT_DELAY (30)
-        router['_attemptExponentialReconnect']();
-
-        expect(closeSpy).toHaveBeenCalledWith('Max reconnect delay reached');
-      });
-
-      it('should double the reconnect delay on each attempt', () => {
-        const reconnectSpy = vi.spyOn(router, 'onBrokerReconnect' as any);
-        router['_failingReconnectDelay'] = 1;
-
-        router['_attemptExponentialReconnect']();
-        vi.advanceTimersByTime(1000);
-
-        expect(reconnectSpy).toHaveBeenCalled();
-        expect(router['_failingReconnectDelay']).toBe(2);
-      });
-
-      it('should cap reconnect delay at maxReconnectDelay', () => {
-        const reconnectSpy = vi.spyOn(router, 'onBrokerReconnect' as any);
-        router['_failingReconnectDelay'] = 16;
-
-        router['_attemptExponentialReconnect']();
-        vi.advanceTimersByTime(16000);
-
-        expect(reconnectSpy).toHaveBeenCalled();
-        expect(router['_failingReconnectDelay']).toBe(30); // capped at max
-      });
-    });
-
-    describe('onCircuitBreakerClosed', () => {
-      it('should set up a reconnect interval', () => {
-        router['onCircuitBreakerClosed']('test');
-        expect(router['_reconnectInterval']).toBeDefined();
-      });
-
-      it('should clear existing interval before creating new one', () => {
-        const existingInterval = setInterval(() => {}, 100000);
-        router['_reconnectInterval'] = existingInterval;
-
-        router['onCircuitBreakerClosed']('test');
-
-        expect(router['_reconnectInterval']).not.toBe(existingInterval);
-      });
-
-      it('should call onBrokerReconnect periodically', () => {
-        const reconnectSpy = vi.spyOn(router, 'onBrokerReconnect' as any);
-        router['onCircuitBreakerClosed']('test');
-
-        vi.advanceTimersByTime(30000); // maxReconnectDelay * 1000
-        expect(reconnectSpy).toHaveBeenCalledTimes(1);
-
-        vi.advanceTimersByTime(30000);
-        expect(reconnectSpy).toHaveBeenCalledTimes(2);
-      });
-    });
-
-    describe('onCircuitBreakerOpen', () => {
-      it('should clear reconnect interval', () => {
-        router['_reconnectInterval'] = setInterval(() => {}, 100000);
-        router['onCircuitBreakerOpen']();
-        expect(router['_reconnectInterval']).toBeUndefined();
-      });
-
-      it('should handle no existing interval gracefully', () => {
-        router['_reconnectInterval'] = undefined;
-        expect(() => router['onCircuitBreakerOpen']()).not.toThrow();
-      });
-    });
-
-    describe('onBrokerDisconnect', () => {
-      it('should trigger circuit breaker failure', () => {
-        const failureSpy = vi.spyOn(router['_circuitBreaker'], 'triggerFailure');
-        router['onBrokerDisconnect']('disconnect reason');
-        expect(failureSpy).toHaveBeenCalledWith('disconnect reason');
-      });
-    });
-
-    describe('onBrokerReconnect', () => {
-      it('should trigger circuit breaker success', () => {
-        const successSpy = vi.spyOn(router['_circuitBreaker'], 'triggerSuccess');
-        router['onBrokerReconnect']();
-        expect(successSpy).toHaveBeenCalled();
-      });
     });
   });
 

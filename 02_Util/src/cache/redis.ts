@@ -68,7 +68,10 @@ export class RedisCache implements ICache {
                 .quit()
                 .then()
                 .catch((error) => {
-                  console.log('Error quitting subscriber', error);
+                  // Ignore error if client is already closed
+                  if (!error.message?.includes('The client is closed')) {
+                    console.log('Error quitting subscriber', error);
+                  }
                 });
               break;
             case 'del':
@@ -78,7 +81,10 @@ export class RedisCache implements ICache {
                 .quit()
                 .then()
                 .catch((error) => {
-                  console.log('Error quitting subscriber', error);
+                  // Ignore error if client is already closed
+                  if (!error.message?.includes('The client is closed')) {
+                    console.log('Error quitting subscriber', error);
+                  }
                 });
               break;
             default:
@@ -96,7 +102,10 @@ export class RedisCache implements ICache {
           .quit()
           .then()
           .catch((error) => {
-            console.log('Error closing Redis subscriber', error);
+            // Ignore error if client is already closed
+            if (!error.message?.includes('The client is closed')) {
+              console.log('Error closing Redis subscriber', error);
+            }
           });
       }, waitSeconds * 1000);
     });

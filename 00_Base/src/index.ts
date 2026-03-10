@@ -30,6 +30,7 @@ export {
 export type { IWebsocketConnection } from './interfaces/cache/types.js';
 export type { IFileAccess, IFileStorage } from './interfaces/files/index.js';
 export {
+  AbstractConnectionManager,
   AbstractMessageHandler,
   AbstractMessageSender,
   EventGroup,
@@ -41,20 +42,14 @@ export {
 } from './interfaces/messages/index.js';
 export type {
   HandlerProperties,
+  IConnectionManager,
   IMessage,
   IMessageConfirmation,
   IMessageContext,
   IMessageHandler,
   IMessageSender,
 } from './interfaces/messages/index.js';
-export {
-  AbstractModule,
-  AsHandler,
-  CircuitBreaker,
-  OCPPValidator,
-  type CircuitBreakerOptions,
-  type CircuitBreakerState,
-} from './interfaces/modules/index.js';
+export { AbstractModule, AsHandler, OCPPValidator } from './interfaces/modules/index.js';
 export type { IModule } from './interfaces/modules/index.js';
 export { AbstractMessageRouter, type INetworkConnection } from './interfaces/router/index.js';
 export type {
@@ -386,8 +381,8 @@ export * from './interfaces/dto/charging.needs.dto.js';
 export * from './interfaces/dto/charging.profile.dto.js';
 export * from './interfaces/dto/charging.schedule.dto.js';
 export * from './interfaces/dto/charging.station.dto.js';
-export * from './interfaces/dto/charging.station.security.info.dto.js';
 export * from './interfaces/dto/charging.station.network.profile.dto.js';
+export * from './interfaces/dto/charging.station.security.info.dto.js';
 export * from './interfaces/dto/charging.station.sequence.dto.js';
 export * from './interfaces/dto/component.dto.js';
 export * from './interfaces/dto/composite.schedule.dto.js';
