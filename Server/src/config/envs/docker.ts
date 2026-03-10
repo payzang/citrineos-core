@@ -262,7 +262,6 @@ export function createDockerConfig() {
             ),
             tenantId: DEFAULT_TENANT_ID,
             dynamicTenantResolution: true,
-            maxConnectionsPerTenant: 1,
           },
           {
             id: '4',
@@ -274,7 +273,6 @@ export function createDockerConfig() {
             protocol: 'ocpp1.6',
             tenantId: DEFAULT_TENANT_ID,
             dynamicTenantResolution: true,
-            maxConnectionsPerTenant: 1,
           },
         ],
       },
