@@ -19,7 +19,6 @@ import {
   NotFoundError,
   OCPP1_6_Namespace,
   OCPP2_0_1_Namespace,
-  UnauthorizedError,
 } from '@citrineos/base';
 import type {
   ChargingStationKeyQuerystring,
@@ -42,9 +41,9 @@ import {
   TenantQuerySchema,
   WebsocketDeleteQuerySchema,
   WebsocketGetQuerySchema,
-  WebsocketRequestSchema,
   WebsocketMappingQuerySchema,
   WebsocketMappingRequestSchema,
+  WebsocketRequestSchema,
 } from '@citrineos/data';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { ILogObj } from 'tslog';
@@ -195,14 +194,10 @@ export class AdminApi extends AbstractModuleApi<IMessageRouter> implements IAdmi
   )
   async putWebsocketMapping(
     request: FastifyRequest<{
-      Body: { path: string; tenantId: number };
       Querystring: WebsocketMappingQuerystring;
     }>,
   ): Promise<WebsocketServerConfig> {
-    this._validateSystemToken(request);
-
-    const serverId = request.query.id;
-    const { path, tenantId } = request.body;
+    const { id: serverId, path, tenantId } = request.query;
 
     const websocketConfig = this._module.config.util.networkConnection.websocketServers.find(
       (ws) => ws.id === serverId,
@@ -243,18 +238,10 @@ export class AdminApi extends AbstractModuleApi<IMessageRouter> implements IAdmi
   @AsDataEndpoint(Namespace.WebsocketMapping, HttpMethod.Delete, WebsocketMappingQuerySchema)
   async deleteWebsocketMapping(
     request: FastifyRequest<{
-      Querystring: WebsocketMappingQuerystring & { path?: string; tenantId?: number };
+      Querystring: WebsocketMappingQuerystring;
     }>,
   ): Promise<WebsocketServerConfig> {
-    this._validateSystemToken(request);
-
-    const serverId = request.query.id;
-    const path = (request.query as any).path;
-    const tenantId = (request.query as any).tenantId;
-
-    if (!path && !tenantId) {
-      throw new BadRequestError('Either path or tenantId is required to delete a mapping');
-    }
+    const { id: serverId, path, tenantId } = request.query;
 
     const websocketConfig = this._module.config.util.networkConnection.websocketServers.find(
       (ws) => ws.id === serverId,
@@ -265,45 +252,24 @@ export class AdminApi extends AbstractModuleApi<IMessageRouter> implements IAdmi
     }
 
     if (websocketConfig.tenantPathMapping) {
-      let changed = false;
-      if (path && websocketConfig.tenantPathMapping[path] !== undefined) {
+      if (websocketConfig.tenantPathMapping[path] === undefined) {
+        throw new NotFoundError(
+          `Mapping for path ${path} not found in websocket configuration ${serverId}`,
+        );
+      } else if (websocketConfig.tenantPathMapping[path] !== tenantId) {
+        throw new BadRequestError(`Mapping for path ${path} is not mapped to tenant ${tenantId}`);
+      } else if (websocketConfig.tenantPathMapping[path] === tenantId) {
         delete websocketConfig.tenantPathMapping[path];
-        changed = true;
-      } else if (tenantId) {
-        const tenantIdNum = Number(tenantId);
-        for (const [key, value] of Object.entries(websocketConfig.tenantPathMapping)) {
-          if (value === tenantIdNum) {
-            delete websocketConfig.tenantPathMapping[key];
-            changed = true;
-          }
-        }
       }
 
-      if (changed) {
-        await ConfigStoreFactory.getInstance().saveConfig(this._module.config);
-        await this._serverNetworkProfileRepository.upsertServerNetworkProfile(
-          websocketConfig,
-          this._module.config.maxCallLengthSeconds,
-        );
-      }
+      await ConfigStoreFactory.getInstance().saveConfig(this._module.config);
+      await this._serverNetworkProfileRepository.upsertServerNetworkProfile(
+        websocketConfig,
+        this._module.config.maxCallLengthSeconds,
+      );
     }
 
     return websocketConfig;
-  }
-
-  /**
-   * Helper to validate internal system calls
-   */
-  private _validateSystemToken(request: FastifyRequest): void {
-    const systemToken = this._module.config.centralSystem.systemApiToken;
-    if (!systemToken) {
-      return;
-    }
-
-    const providedToken = request.headers['x-system-token'];
-    if (providedToken !== systemToken) {
-      throw new UnauthorizedError('Invalid or missing system API token');
-    }
   }
 
   @AsDataEndpoint(Namespace.Websocket, HttpMethod.Delete, WebsocketDeleteQuerySchema)

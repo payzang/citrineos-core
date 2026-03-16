@@ -28,6 +28,7 @@ import type { ILogObj } from 'tslog';
 import { Logger } from 'tslog';
 import type { ErrorEvent, MessageEvent } from 'ws';
 import { WebSocket, WebSocketServer } from 'ws';
+import { UpgradeAuthenticationError } from './authenticator/errors/AuthenticationError.js';
 import type { IUpgradeError } from './authenticator/errors/IUpgradeError.js';
 
 export class WebsocketNetworkConnection implements INetworkConnection {
@@ -35,7 +36,7 @@ export class WebsocketNetworkConnection implements INetworkConnection {
   protected _config: SystemConfig;
   protected _logger: Logger<ILogObj>;
   private _identifierConnections: Map<string, WebSocket> = new Map();
-  // tenantId as key and number of active connections as value, for O(1) per-tenant count tracking
+  // tenantId as key and number of active connections as value
   private _tenantConnectionCounts: Map<number, number> = new Map();
   // websocketServers id as key and http server as value
   private _httpServersMap: Map<string, http.Server | https.Server>;
@@ -243,9 +244,14 @@ export class WebsocketNetworkConnection implements INetworkConnection {
       // Resolve tenant at upgrade time (query param, path segment, header),
       // falling back to the server-configured tenant if none provided.
       const resolvedTenantId = websocketServerConfig.dynamicTenantResolution
-        ? this._extractTenantIdFromRequest(req, websocketServerConfig) ??
-          websocketServerConfig.tenantId
+        ? this._extractTenantIdFromRequest(req, websocketServerConfig)
         : websocketServerConfig.tenantId;
+
+      if (resolvedTenantId === undefined) {
+        throw new UpgradeAuthenticationError(
+          'Tenant resolution failed: no valid tenant path provided in request and server is not configured with a default tenantId',
+        );
+      }
 
       // Attach resolved tenant to request so downstream handlers (connection) can use it
       (req as any).__resolvedTenantId = resolvedTenantId;

@@ -62,7 +62,6 @@ export const systemConfigInputSchema = z.object({
   centralSystem: z.object({
     host: z.string().default('localhost').optional(),
     port: z.number().int().min(1).default(8081).optional(),
-    systemApiToken: z.string().optional(),
   }),
   modules: z.object({
     certificates: z
@@ -309,7 +308,7 @@ export const websocketServerSchema = z
     tlsCertificateChainFilePath: z.string().optional(),
     mtlsCertificateAuthorityKeyFilePath: z.string().optional(),
     rootCACertificateFilePath: z.string().optional(),
-    tenantId: z.number(),
+    tenantId: z.number().optional(),
     tenantPathMapping: z.record(z.string(), z.number()).optional(),
     // When true, tenant can be resolved at connection upgrade time from the request
     // (query param, path segment, or header). Defaults to false for strict per-server tenant.
@@ -331,7 +330,14 @@ export const websocketServerSchema = z
       default:
         return false;
     }
-  });
+  })
+  .refine((obj) => {
+    if ((obj.tenantId !== undefined) === obj.dynamicTenantResolution) {
+      return false; // Cannot have both or neither tenantId and dynamicTenantResolution
+    } else {
+      return true;
+    }
+  }, 'Invalid websocket server configuration: tenantId and dynamicTenantResolution are mutually exclusive and one must be set');
 
 export const systemConfigSchema = z
   .object({
@@ -339,7 +345,6 @@ export const systemConfigSchema = z
     centralSystem: z.object({
       host: z.string(),
       port: z.number().int().min(1),
-      systemApiToken: z.string().optional(),
     }),
     modules: z.object({
       certificates: z
