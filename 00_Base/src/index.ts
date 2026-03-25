@@ -24,6 +24,7 @@ export type { ICache } from './interfaces/cache/cache.js';
 export {
   CacheNamespace,
   createIdentifier,
+  getCacheTenantPathMappingKey,
   getStationIdFromIdentifier,
   getTenantIdFromIdentifier,
 } from './interfaces/cache/types.js';
