@@ -14,27 +14,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - createdAt
-        - id
-        - key
-        - readonly
-        - stationId
-        - updatedAt
-        - value
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - readonly
-        - key
-        - stationId
-        - value
-        - id
-        - tenantId
-        - createdAt
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -43,14 +28,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - createdAt
-        - id
-        - key
-        - readonly
-        - stationId
-        - updatedAt
-        - value
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

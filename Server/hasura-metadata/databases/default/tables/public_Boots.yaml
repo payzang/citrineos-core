@@ -22,39 +22,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - bootRetryInterval
-        - bootWithRejectedVariables
-        - changeConfigurationsOnPending
-        - createdAt
-        - getBaseReportOnPending
-        - getConfigurationsOnPending
-        - heartbeatInterval
-        - id
-        - lastBootTime
-        - status
-        - statusInfo
-        - updatedAt
-        - variablesRejectedOnLastBoot
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - bootWithRejectedVariables
-        - changeConfigurationsOnPending
-        - getBaseReportOnPending
-        - getConfigurationsOnPending
-        - id
-        - status
-        - bootRetryInterval
-        - heartbeatInterval
-        - tenantId
-        - statusInfo
-        - variablesRejectedOnLastBoot
-        - createdAt
-        - lastBootTime
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -63,20 +36,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - bootRetryInterval
-        - bootWithRejectedVariables
-        - changeConfigurationsOnPending
-        - createdAt
-        - getBaseReportOnPending
-        - getConfigurationsOnPending
-        - heartbeatInterval
-        - id
-        - lastBootTime
-        - status
-        - statusInfo
-        - updatedAt
-        - variablesRejectedOnLastBoot
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

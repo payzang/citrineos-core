@@ -23,3 +23,12 @@ array_relationships:
         table:
           name: SetNetworkProfiles
           schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns: '*'
+      filter:
+        tenantId:
+          _eq: x-hasura-tenant-id
+      allow_aggregations: true
+    comment: ""

@@ -25,37 +25,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - chargingProfileDatabaseId
-        - chargingRateUnit
-        - chargingSchedulePeriod
-        - createdAt
-        - databaseId
-        - duration
-        - id
-        - minChargingRate
-        - startSchedule
-        - stationId
-        - timeBase
-        - updatedAt
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - chargingRateUnit
-        - startSchedule
-        - stationId
-        - chargingProfileDatabaseId
-        - databaseId
-        - duration
-        - id
-        - tenantId
-        - chargingSchedulePeriod
-        - minChargingRate
-        - createdAt
-        - timeBase
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -64,19 +39,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - chargingProfileDatabaseId
-        - chargingRateUnit
-        - chargingSchedulePeriod
-        - createdAt
-        - databaseId
-        - duration
-        - id
-        - minChargingRate
-        - startSchedule
-        - stationId
-        - timeBase
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

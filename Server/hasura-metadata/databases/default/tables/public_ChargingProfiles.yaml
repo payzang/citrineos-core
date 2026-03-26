@@ -25,43 +25,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - chargingLimitSource
-        - chargingProfileKind
-        - chargingProfilePurpose
-        - createdAt
-        - databaseId
-        - evseId
-        - id
-        - isActive
-        - recurrencyKind
-        - stackLevel
-        - stationId
-        - transactionDatabaseId
-        - updatedAt
-        - validFrom
-        - validTo
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - isActive
-        - chargingLimitSource
-        - chargingProfileKind
-        - chargingProfilePurpose
-        - recurrencyKind
-        - stationId
-        - databaseId
-        - evseId
-        - id
-        - stackLevel
-        - tenantId
-        - transactionDatabaseId
-        - createdAt
-        - updatedAt
-        - validFrom
-        - validTo
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -70,22 +39,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - chargingLimitSource
-        - chargingProfileKind
-        - chargingProfilePurpose
-        - createdAt
-        - databaseId
-        - evseId
-        - id
-        - isActive
-        - recurrencyKind
-        - stackLevel
-        - stationId
-        - transactionDatabaseId
-        - updatedAt
-        - validFrom
-        - validTo
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

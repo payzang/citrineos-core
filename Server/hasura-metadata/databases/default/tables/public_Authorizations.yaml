@@ -49,52 +49,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - additionalInfo
-        - allowedConnectorTypes
-        - cacheExpiryDateTime
-        - chargingPriority
-        - concurrentTransaction
-        - createdAt
-        - customData
-        - disallowedEvseIdPrefixes
-        - groupAuthorizationId
-        - id
-        - idToken
-        - idTokenType
-        - language1
-        - language2
-        - personalMessage
-        - realTimeAuth
-        - realTimeAuthLastAttempt
-        - realTimeAuthTimeout
-        - realTimeAuthUrl
-        - status
-        - tenantPartnerId
-        - updatedAt
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - allowedConnectorTypes
-        - disallowedEvseIdPrefixes
-        - id
-        - idToken
-        - idTokenType
-        - additionalInfo
-        - status
-        - cacheExpiryDateTime
-        - chargingPriority
-        - language1
-        - language2
-        - personalMessage
-        - groupAuthorizationId
-        - concurrentTransaction
-        - tenantId
-        - createdAt
-        - updatedAt
-        - concurrentTransaction
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -103,29 +63,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - additionalInfo
-        - allowedConnectorTypes
-        - cacheExpiryDateTime
-        - chargingPriority
-        - concurrentTransaction
-        - createdAt
-        - customData
-        - disallowedEvseIdPrefixes
-        - groupAuthorizationId
-        - id
-        - idToken
-        - idTokenType
-        - language1
-        - language2
-        - personalMessage
-        - realTimeAuth
-        - realTimeAuthLastAttempt
-        - realTimeAuthTimeout
-        - realTimeAuthUrl
-        - status
-        - tenantPartnerId
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

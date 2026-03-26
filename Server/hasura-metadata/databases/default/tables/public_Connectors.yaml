@@ -35,54 +35,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - connectorId
-        - createdAt
-        - errorCode
-        - evseId
-        - evseTypeConnectorId
-        - format
-        - id
-        - info
-        - maximumAmperage
-        - maximumPowerWatts
-        - maximumVoltage
-        - powerType
-        - stationId
-        - status
-        - tariffId
-        - termsAndConditionsUrl
-        - timestamp
-        - type
-        - updatedAt
-        - vendorErrorCode
-        - vendorId
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - connectorId
-        - createdAt
-        - errorCode
-        - evseId
-        - evseTypeConnectorId
-        - format
-        - id
-        - info
-        - maximumAmperage
-        - maximumPowerWatts
-        - maximumVoltage
-        - powerType
-        - stationId
-        - status
-        - tariffId
-        - termsAndConditionsUrl
-        - timestamp
-        - type
-        - updatedAt
-        - vendorErrorCode
-        - vendorId
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -91,28 +49,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - connectorId
-        - createdAt
-        - errorCode
-        - evseId
-        - evseTypeConnectorId
-        - format
-        - id
-        - info
-        - maximumAmperage
-        - maximumPowerWatts
-        - maximumVoltage
-        - powerType
-        - stationId
-        - status
-        - tariffId
-        - termsAndConditionsUrl
-        - timestamp
-        - type
-        - updatedAt
-        - vendorErrorCode
-        - vendorId
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

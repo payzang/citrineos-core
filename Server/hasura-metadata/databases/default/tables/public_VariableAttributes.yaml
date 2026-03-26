@@ -37,42 +37,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - bootConfigId
-        - componentId
-        - constant
-        - createdAt
-        - dataType
-        - evseDatabaseId
-        - generatedAt
-        - id
-        - mutability
-        - persistent
-        - stationId
-        - type
-        - updatedAt
-        - value
-        - variableId
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - bootConfigId
-        - componentId
-        - constant
-        - createdAt
-        - dataType
-        - evseDatabaseId
-        - generatedAt
-        - id
-        - mutability
-        - persistent
-        - stationId
-        - type
-        - updatedAt
-        - value
-        - variableId
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -81,22 +51,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - bootConfigId
-        - componentId
-        - constant
-        - createdAt
-        - dataType
-        - evseDatabaseId
-        - generatedAt
-        - id
-        - mutability
-        - persistent
-        - stationId
-        - type
-        - updatedAt
-        - value
-        - variableId
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

@@ -14,46 +14,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - certificateFileHash
-        - certificateFileId
-        - commonName
-        - countryName
-        - createdAt
-        - id
-        - isCA
-        - issuerName
-        - keyLength
-        - organizationName
-        - pathLen
-        - privateKeyFileId
-        - serialNumber
-        - signatureAlgorithm
-        - signedBy
-        - updatedAt
-        - validBefore
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - serialNumber
-        - isCA
-        - certificateFileId
-        - commonName
-        - countryName
-        - issuerName
-        - organizationName
-        - privateKeyFileId
-        - signatureAlgorithm
-        - signedBy
-        - id
-        - keyLength
-        - pathLen
-        - tenantId
-        - createdAt
-        - updatedAt
-        - validBefore
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -62,24 +28,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - certificateFileHash
-        - certificateFileId
-        - commonName
-        - countryName
-        - createdAt
-        - id
-        - isCA
-        - issuerName
-        - keyLength
-        - organizationName
-        - pathLen
-        - privateKeyFileId
-        - serialNumber
-        - signatureAlgorithm
-        - signedBy
-        - updatedAt
-        - validBefore
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id

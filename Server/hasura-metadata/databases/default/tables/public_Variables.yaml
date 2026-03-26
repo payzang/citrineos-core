@@ -50,22 +50,12 @@ insert_permissions:
       check:
         tenantId:
           _eq: x-hasura-tenant-id
-      columns:
-        - createdAt
-        - id
-        - instance
-        - name
-        - updatedAt
+      columns: '*'
     comment: ""
 select_permissions:
   - role: user
     permission:
-      columns:
-        - createdAt
-        - id
-        - instance
-        - name
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
@@ -74,12 +64,7 @@ select_permissions:
 update_permissions:
   - role: user
     permission:
-      columns:
-        - createdAt
-        - id
-        - instance
-        - name
-        - updatedAt
+      columns: '*'
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
