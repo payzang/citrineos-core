@@ -547,15 +547,41 @@ export class MessageRouterImpl extends AbstractMessageRouter implements IMessage
       });
     }
 
-    // Ensure only one call is processed at a time
     this._cache
-      .set(
+      .existsAnyInNamespace(CacheNamespace.Transactions + identifier)
+      .then((exists) => {
+        if (exists) {
+          this._logger.debug(
+            'Another call is already in progress, processing call anyways',
+            identifier,
+            message,
+          );
+        }
+      })
+      .catch((error) => {
+        this._logger.error(
+          'Failed to check if another call is in progress:',
+          identifier,
+          message,
+          error,
+        );
+      });
+    this._cache
+      .setIfNotExist(
         messageId,
         `${action}@${timestamp.toISOString()}`,
         CacheNamespace.Transactions + identifier,
         this._config.maxCallLengthSeconds,
       )
-      .then()
+      .then((success) => {
+        if (!success) {
+          this._logger.debug(
+            'Another call with same messageId is already in progress, processing call anyways',
+            identifier,
+            message,
+          );
+        }
+      })
       .catch((error) => {
         this._logger.error('Failed to set call in cache:', identifier, message, error);
       });
