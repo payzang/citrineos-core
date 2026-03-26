@@ -8,20 +8,6 @@ object_relationships:
   - name: Tenant
     using:
       foreign_key_constraint_on: tenantId
-insert_permissions:
-  - role: user
-    permission:
-      columns:
-        - readonly
-        - key
-        - stationId
-        - value
-        - id
-        - createdAt
-        - updatedAt
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
 select_permissions:
   - role: user
     permission:
@@ -31,29 +17,11 @@ select_permissions:
         - stationId
         - value
         - id
+        - tenantId
         - createdAt
         - updatedAt
       filter:
         tenantId:
           _eq: x-hasura-tenant-id
       allow_aggregations: true
-update_permissions:
-  - role: user
-    permission:
-      columns:
-        - readonly
-        - key
-        - stationId
-        - value
-        - id
-        - createdAt
-        - updatedAt
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
-delete_permissions:
-  - role: user
-    permission:
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
+    comment: ""

@@ -8,37 +8,12 @@ object_relationships:
   - name: Tenant
     using:
       foreign_key_constraint_on: tenantId
-insert_permissions:
-  - role: user
-    permission:
-      columns:
-        - serialNumber
-        - isCA
-        - certificateFileHash
-        - certificateFileId
-        - commonName
-        - countryName
-        - issuerName
-        - organizationName
-        - privateKeyFileId
-        - signatureAlgorithm
-        - signedBy
-        - id
-        - keyLength
-        - pathLen
-        - createdAt
-        - updatedAt
-        - validBefore
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
 select_permissions:
   - role: user
     permission:
       columns:
         - serialNumber
         - isCA
-        - certificateFileHash
         - certificateFileId
         - commonName
         - countryName
@@ -50,6 +25,7 @@ select_permissions:
         - id
         - keyLength
         - pathLen
+        - tenantId
         - createdAt
         - updatedAt
         - validBefore
@@ -57,33 +33,4 @@ select_permissions:
         tenantId:
           _eq: x-hasura-tenant-id
       allow_aggregations: true
-update_permissions:
-  - role: user
-    permission:
-      columns:
-        - serialNumber
-        - isCA
-        - certificateFileHash
-        - certificateFileId
-        - commonName
-        - countryName
-        - issuerName
-        - organizationName
-        - privateKeyFileId
-        - signatureAlgorithm
-        - signedBy
-        - id
-        - keyLength
-        - pathLen
-        - createdAt
-        - updatedAt
-        - validBefore
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
-delete_permissions:
-  - role: user
-    permission:
-      filter:
-        tenantId:
-          _eq: x-hasura-tenant-id
+    comment: ""
