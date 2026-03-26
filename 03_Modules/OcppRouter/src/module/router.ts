@@ -532,6 +532,7 @@ export class MessageRouterImpl extends AbstractMessageRouter implements IMessage
     const stationId = getStationIdFromIdentifier(identifier);
 
     let action = message[2];
+    this._logger.debug('_onCall:', identifier, message, timestamp.toISOString(), protocol);
 
     action = mapToCallAction(protocol, action);
     const isAllowed = await this._onCallIsAllowed(action, identifier);
@@ -630,9 +631,8 @@ export class MessageRouterImpl extends AbstractMessageRouter implements IMessage
     protocol: OCPPVersionType,
   ): Promise<void> {
     const messageId = message[1];
-    const payload = message[2];
 
-    this._logger.debug('Process CallResult', identifier, messageId, payload);
+    this._logger.debug('_onCallResult:', identifier, message, timestamp.toISOString(), protocol);
 
     const cachedActionTimestamp = await this._cache.get<string>(
       messageId,
@@ -707,7 +707,7 @@ export class MessageRouterImpl extends AbstractMessageRouter implements IMessage
   ): Promise<void> {
     const messageId = message[1];
 
-    this._logger.debug('Process CallError', identifier, message);
+    this._logger.debug('_onCallError:', identifier, message, timestamp.toISOString(), protocol);
 
     const cachedActionTimestamp = await this._cache.get<string>(
       messageId,
