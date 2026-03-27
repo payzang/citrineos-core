@@ -782,15 +782,16 @@ export class TransactionsModule extends AbstractModule {
     const evse = request.evse;
     const evseIsDefined = evse !== null && evse !== undefined;
     if (evseIsDefined) {
-      if (eventType === OCPP2_0_1.TransactionEventEnumType.Started) {
+      if (
+        eventType === OCPP2_0_1.TransactionEventEnumType.Started ||
+        eventType === OCPP2_0_1.TransactionEventEnumType.Updated
+      ) {
         await this._transactionService.deactivateOtherActiveTransactionsAtEvse(
           tenantId,
           transactionId,
           stationId,
           evse,
         );
-      }
-      if (eventType === OCPP2_0_1.TransactionEventEnumType.Updated) {
       }
     }
   }
