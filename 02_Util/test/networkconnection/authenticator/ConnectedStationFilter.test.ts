@@ -41,7 +41,7 @@ describe('ConnectedStationFilter', () => {
 
     await expect(
       filter.authenticate(DEFAULT_TENANT_ID, stationId, aRequest(), anAuthenticationOptions()),
-    ).rejects.toThrow(`New connection attempted for already connected identifier ${stationId}`);
+    ).rejects.toThrow(`New connection attempted for already connected identifier ${identifier}`);
 
     expect(cache.get).toHaveBeenCalledWith(identifier, CacheNamespace.Connections);
   });

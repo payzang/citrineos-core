@@ -1121,7 +1121,7 @@ describe('MessageRouterImpl', () => {
       expect(result).toBe(true);
       expect(sender.send).toHaveBeenCalled();
       // New: key is messageId, namespace is CacheNamespace.Transactions + identifier, value is action@timestamp
-      expect(cache.set).toHaveBeenCalledWith(
+      expect(cache.setIfNotExist).toHaveBeenCalledWith(
         CORRELATION_ID,
         expect.stringMatching(new RegExp(`^${OCPP2_0_1_CallAction.Heartbeat}@`)),
         CacheNamespace.Transactions + IDENTIFIER,
