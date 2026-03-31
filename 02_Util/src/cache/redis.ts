@@ -166,4 +166,10 @@ export class RedisCache implements ICache {
         return false;
       });
   }
+
+  updateExpiration(key: string, expireSeconds: number, namespace?: string): Promise<boolean> {
+    namespace = namespace || 'default';
+    key = `${namespace}:${key}`;
+    return this._client.expire(key, expireSeconds);
+  }
 }

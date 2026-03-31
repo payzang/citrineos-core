@@ -79,4 +79,14 @@ export interface ICache {
     namespace?: string,
     expireSeconds?: number,
   ): Promise<boolean>;
+
+  /**
+   * Updates the expiration of a key without modifying its value. Returns false if the key does not exist.
+   *
+   * @param {string} key - The key to update.
+   * @param {number} expireSeconds - The number of seconds from now after which the key should expire.
+   * @param {string} [namespace] - The namespace for the key.
+   * @returns {Promise<boolean>} - Returns true if the expiration was updated successfully, false if the key does not exist.
+   * */
+  updateExpiration(key: string, expireSeconds: number, namespace?: string): Promise<boolean>;
 }

@@ -189,6 +189,24 @@ export class MemoryCache implements ICache {
     return true;
   }
 
+  async updateExpiration(key: string, expireSeconds: number, namespace?: string): Promise<boolean> {
+    namespace = namespace || 'default';
+    const namespaceKey = `${namespace}:${key}`;
+    if (!this._cache.has(namespaceKey)) {
+      return false;
+    }
+    if (this._timeoutMap.has(namespaceKey)) {
+      clearTimeout(this._timeoutMap.get(namespaceKey));
+    }
+    this._timeoutMap.set(
+      namespaceKey,
+      setTimeout(() => {
+        this._cache.delete(namespaceKey);
+      }, expireSeconds * 1000),
+    );
+    return true;
+  }
+
   private resolveOnChange(namespaceKey: string, value: string) {
     const resolveOnChangeCallback = this._keySubscriptionMap.get(namespaceKey);
     if (resolveOnChangeCallback) {
