@@ -497,7 +497,7 @@ export class WebsocketNetworkConnection implements INetworkConnection {
       ws.pong(message);
     });
 
-    ws.on('pong', async () => {
+    ws.on('pong', () => {
       this._logger.debug('Pong received for', identifier);
 
       // Disarm the pong-timeout — the client is alive.
@@ -603,9 +603,6 @@ export class WebsocketNetworkConnection implements INetworkConnection {
       () => {
         this._pingTimers.delete(identifier);
 
-        this._logger.debug('Pinging client', identifier);
-        ws.ping();
-
         const pongTimeout = setTimeout(() => {
           this._logger.debug('Pong timeout for', identifier, '— terminating');
           this._pongTimeouts.delete(identifier);
@@ -613,6 +610,9 @@ export class WebsocketNetworkConnection implements INetworkConnection {
         }, pingInterval * 1000);
 
         this._pongTimeouts.set(identifier, pongTimeout);
+
+        this._logger.debug('Pinging client', identifier);
+        ws.ping();
       },
       pingInterval * 1000 + jitter,
     );
